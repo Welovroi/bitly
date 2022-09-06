@@ -178,6 +178,19 @@ module Bitly
         Bitly::API::Bitlink.list(client: @client, group_guid: guid)
       end
 
+
+      def clicks(unit: nil, units: nil, unit_reference: nil, size: nil)
+        ClickMetric.list_by_group(
+          client: @client,
+          group_guid: guid,
+          unit: unit,
+          units: units,
+          unit_reference: unit_reference,
+          size: size
+        )
+      end
+
+
       ##
       # Gets the referring networks for the group.
       # [`GET /v4/groups/{group_guid}/referring_networks`](https://dev.bitly.com/v4/#operation/GetGroupMetricsByReferringNetworks)

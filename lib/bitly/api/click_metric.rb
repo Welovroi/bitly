@@ -60,6 +60,19 @@ module Bitly
         )
       end
 
+
+      def self.list_by_group(client:, group_guid:, unit: nil, units: nil, size: nil, unit_reference: nil)
+        list_metrics(
+          client: client,
+          path: "/groups/#{group_guid}/clicks",
+          unit: unit,
+          units: units,
+          unit_reference: unit_reference,
+          size: size
+        )
+      end
+
+
       ##
       # Gets the country click metrics for the group.
       # [`GET /v4/groups/{group_guid}/countries`](https://dev.bitly.com/v4/#operation/getGroupMetricsByCountries)
@@ -79,7 +92,7 @@ module Bitly
       def self.list_countries_by_group(client:, group_guid:, unit: nil, units: nil, size: nil, unit_reference: nil)
         list_metrics(
           client: client,
-          path: "/groups/#{group_guid}/countries",
+          path: "/groups/#{group_guid}/clicks",
           unit: unit,
           units: units,
           unit_reference: unit_reference,
@@ -148,7 +161,7 @@ module Bitly
       end
 
       def self.attributes
-        [:clicks, :value]
+        [:clicks, :value, :ts, :count]
       end
       attr_reader(*attributes)
 
@@ -168,8 +181,10 @@ module Bitly
             "size" => size
           }
         )
-        body = response.body
-        click_metrics = body["metrics"].map do |metric|
+        body    = response.body
+        metrics = body["metrics"] || body["data"]
+
+        click_metrics = metrics.map do |metric|
           ClickMetric.new(data: metric)
         end
         List.new(
